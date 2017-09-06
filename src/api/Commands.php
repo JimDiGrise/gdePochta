@@ -2,7 +2,7 @@
     require "../vendor/autoload.php";
 
     require "yandex.php";
-
+    require "pochta.php";
     class Commands {
         private $bot;
         private $lastChatId;
@@ -47,8 +47,10 @@
         }
         private function handleSetLocation($geo) {
             $ya = new Yandex();
-            $adress = $ya->getAdress($geo);
-            
+            $address = $ya->getAdress($geo);
+            $pochta = new Pochta();
+            print_r($address);
+            print_r($pochta->getIndex($address));
         }
     }
     ?>
