@@ -52,6 +52,7 @@
             //print_r($address);
             $index = $pochta->getIndex($address);
             $office = $ya->getPostOfficeByIndex($index);
+            $ya->getSaticMap($geo);
             $hours = explode(";",$office["Часы"] );
             $this->bot->sendMessage("Имя: " . $office["Имя"] . "\n" . 
                                     "Адресс: " . $office["Адресс"] . "\n" . 

@@ -29,6 +29,10 @@
             $response["Телефон"] = $responseBody->properties->CompanyMetaData->Phones[0]->formatted;
             $response["Часы"]= $responseBody->properties->CompanyMetaData->Hours->text;
             return $response;
+        }
+        public function getSaticMap($geo) {
+            $response = $this->httpClient->request('GET', "https://static-maps.yandex.ru/1.x/?ll=$geo->longitude, $geo->latitude&size=250,250&z=17&l=map&pt=$geo->longitude, $geo->latitude,pm2dgm&scale=1.0");
+            file_put_contents("img.png", $response->getBody());  
         }    
     }
 ?>
