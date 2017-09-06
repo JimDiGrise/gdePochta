@@ -49,8 +49,16 @@
             $ya = new Yandex();
             $address = $ya->getAdress($geo);
             $pochta = new Pochta();
-            print_r($address);
-            print_r($pochta->getIndex($address));
+            //print_r($address);
+            $index = $pochta->getIndex($address);
+            $office = $ya->getPostOfficeByIndex($index);
+            $hours = explode(";",$office["Часы"] );
+            $this->bot->sendMessage("Имя: " . $office["Имя"] . "\n" . 
+                                    "Адресс: " . $office["Адресс"] . "\n" . 
+                                    "Сайт: " . $office["Сайт"] . "\n" . 
+                                    "Телефон: " . $office["Телефон"] . "\n" .
+                                    "Часы работы: \n" . $hours[0] . "\n" . $hours[1], $this->geoKeyboard);
+
         }
     }
     ?>
