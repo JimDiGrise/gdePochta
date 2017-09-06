@@ -28,15 +28,16 @@
             if( $command == "/start" ) {
                 $this->handleStart();
             } else {
+                $this->handleWrong();
             }
         }
        
         private function handleStart() {
             $this->bot->sendMessage( "Почтовый бот\n ", $this->geoKeyboard);
-            
         }
-       
-
+        private function handleWrong() {
+            $this->bot->sendMessage( "Команда не найдена", $this->geoKeyboard);
+        }
         public function setLastChatId($chatId) {
             $this->lastChatId = $chatId;
         }

@@ -29,7 +29,7 @@
                 return FALSE;
             }
             $length = count($responseBody->result);
-           
+            $this->offset = (int)$responseBody->result[$length - 1]->update_id;
             $this->lastChatId = $responseBody->result[$length - 1]->message->chat->id;
 
             if(!empty($responseBody->result[$length - 1]->message->location)) {
