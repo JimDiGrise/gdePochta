@@ -1,6 +1,8 @@
 <?php 
     require "../vendor/autoload.php";
-  
+    
+   
+
     use GuzzleHttp\Client;
 
 
@@ -33,8 +35,7 @@
             $this->lastChatId = $responseBody->result[$length - 1]->message->chat->id;
 
             if(!empty($responseBody->result[$length - 1]->message->location)) {
-                $this->location = $responseBody->result[$length - 1]->message->location;
-                return "location was set";    
+                return $responseBody->result[$length - 1]->message->location;    
             }
             return $responseBody->result[$length - 1]->message->text;
         }
