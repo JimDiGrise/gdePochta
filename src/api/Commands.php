@@ -27,6 +27,8 @@
         public function handleCommand($command) {
             if( $command == "/start" ) {
                 $this->handleStart();
+            } else if($command == "location was set") {
+                $this->handleSetLocation();
             } else {
                 $this->handleWrong();
             }
@@ -40,6 +42,16 @@
         }
         public function setLastChatId($chatId) {
             $this->lastChatId = $chatId;
+        }
+        private function handleSetLocation() {
+            $path = "../geolocation.cfg";
+            if(!file_exists($path) ) {
+                file_put_contents($path, json_encode([]));    
+            }
+            $geo = json_decode(file_get_contents($path), true);
+            
+            $geo[$this->bot->getChatId()] = $this->bot->getLocation();
+            file_put_contents($path, json_encode($geo));
         }
     }
     ?>
