@@ -43,15 +43,21 @@
         public function setLastChatId($chatId) {
             $this->lastChatId = $chatId;
         }
-        private function handleSetLocation() {
-            $path = "../geolocation.cfg";
-            if(!file_exists($path) ) {
-                file_put_contents($path, json_encode([]));    
-            }
-            $geo = json_decode(file_get_contents($path), true);
-            
-            $geo[$this->bot->getChatId()] = $this->bot->getLocation();
-            file_put_contents($path, json_encode($geo));
+        private function handleSetLocation($geo) {
+            $ya = new Yandex();
+            $address = $ya->getAdress($geo);
+            $pochta = new Pochta();
+            $index = $pochta->getIndex($address);
+            $office = $ya->getPostOfficeByIndex($index);
+            $ya->getSaticMap($office["Geo"]);
+            $hours = explode(";",$office["Часы"] );
+            $this->bot->sendMessage($office["Имя"] . "\n" . 
+                                    "Адрес: " . $office["Адрес"] . "\n" . 
+                                    "Телефон: " . $office["Телефон"] . "\n" .
+                                    "Часы работы: \n" . $hours[0] . "\n" . $hours[1], $this->geoKeyboard);
+            sleep(1);
+            $this->bot->sendPhoto("img.png");
+
         }
     }
     ?>
