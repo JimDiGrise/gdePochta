@@ -7,6 +7,7 @@
         private $bot;
         private $lastChatId;
         private $geoLocation;
+        private $index;
         private $menuKeyboard = [
             'keyboard' => [
                 ["Найти отделение по местоположению"],
@@ -36,12 +37,18 @@
             
         }
         public function handleCommand($command) {
-            if( $command == "/start" || "Изменить местоположение") {
+            if( $command ==  "/start") {
+                $this->handleStart();
+            } else if($command == "Изменить местоположение") {
                 $this->handleStart();
             } else if($command == "location was set") {
                 $this->setLocation();
+            } else if($command == "index was set") {
+                $this->getPostOfficeByIndex();
             } else if($command == "Найти отделение по местоположению") {
                 $this->getPostOfficeByGeo();
+            } else if($command == "Найти отделение по индексу") {
+                $this->bot->sendMessage( "Введите индекс\n ", $this->geoKeyboard);
             } else {
                 $this->handleWrong();
             }
@@ -53,6 +60,10 @@
         }
         private function handleWrong() {
             $this->bot->sendMessage( "Команда не найдена", $this->menuKeyboard);
+        }
+        private function setIndex($index) {
+            $this->index = $index;
+            
         }
         public function setLastChatId($chatId) {
             $this->lastChatId = $chatId;
@@ -67,16 +78,33 @@
             $this->bot->sendMessage("Ваш адрес: " . $address, $this->menuKeyboard);
             sleep(1);
             $pochta = new Pochta();
-            $index = $pochta->getIndex($address);
+                $index = $pochta->getIndex($address);
+
             sleep(1);
             $this->bot->sendMessage("Ваш индекс: " . $index, $this->menuKeyboard);
             $office = $ya->getPostOfficeByIndex($index);
-            $ya->getSaticMap($office["Geo"]);
             $hours = explode(";",$office["Часы"] );
             $this->bot->sendMessage($office["Имя"] . "\n" . 
                                     "Адрес: " . $office["Адрес"] . "\n" . 
                                     "Телефон: " . $office["Телефон"] . "\n" .
                                     "Часы работы: \n" . $hours[0] . "\n" . $hours[1], $this->menuKeyboard);
+            $ya->getSaticMap($office["Geo"]);
+            sleep(1);
+            $this->bot->sendPhoto("img.png");
+
+        }
+        private function getPostOfficeByIndex() {
+            $index = $this->bot->getIndex();
+            $this->bot->sendMessage("Ваш индекс: " . $index, $this->menuKeyboard);
+            sleep(1);
+            $ya = new Yandex();
+            $office = $ya->getPostOfficeByIndex($index);
+            $hours = explode(";",$office["Часы"] );
+            $this->bot->sendMessage($office["Имя"] . "\n" . 
+                                    "Адрес: " . $office["Адрес"] . "\n" . 
+                                    "Телефон: " . $office["Телефон"] . "\n" .
+                                    "Часы работы: \n" . $hours[0] . "\n" . $hours[1], $this->menuKeyboard);
+            $ya->getSaticMap($office["Geo"]);
             sleep(1);
             $this->bot->sendPhoto("img.png");
 
