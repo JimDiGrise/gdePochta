@@ -36,12 +36,12 @@
             
         }
         public function handleCommand($command) {
-            if( $command == "/start" ) {
+            if( $command == "/start" || "Изменить местоположение") {
                 $this->handleStart();
             } else if($command == "location was set") {
                 $this->setLocation();
             } else if($command == "Найти отделение по местоположению") {
-                $this->getPostOffice();
+                $this->getPostOfficeByGeo();
             } else {
                 $this->handleWrong();
             }
@@ -60,20 +60,23 @@
         private function setLocation() {
             $this->bot->sendMessage( "Меню\n ", $this->menuKeyboard);
         } 
-        private function getPostOffice() {
+        private function getPostOfficeByGeo() {
             $geo = $this->bot->getLocation();
-            print_r($geo);
             $ya = new Yandex();
             $address = $ya->getAdress($geo);
+            $this->bot->sendMessage("Ваш адрес: " . $address, $this->menuKeyboard);
+            sleep(1);
             $pochta = new Pochta();
             $index = $pochta->getIndex($address);
+            sleep(1);
+            $this->bot->sendMessage("Ваш индекс: " . $index, $this->menuKeyboard);
             $office = $ya->getPostOfficeByIndex($index);
             $ya->getSaticMap($office["Geo"]);
             $hours = explode(";",$office["Часы"] );
             $this->bot->sendMessage($office["Имя"] . "\n" . 
                                     "Адрес: " . $office["Адрес"] . "\n" . 
                                     "Телефон: " . $office["Телефон"] . "\n" .
-                                    "Часы работы: \n" . $hours[0] . "\n" . $hours[1], $this->geoKeyboard);
+                                    "Часы работы: \n" . $hours[0] . "\n" . $hours[1], $this->menuKeyboard);
             sleep(1);
             $this->bot->sendPhoto("img.png");
 
