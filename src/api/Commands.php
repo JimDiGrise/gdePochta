@@ -49,16 +49,16 @@
             $ya = new Yandex();
             $address = $ya->getAdress($geo);
             $pochta = new Pochta();
-            //print_r($address);
             $index = $pochta->getIndex($address);
             $office = $ya->getPostOfficeByIndex($index);
-            $ya->getSaticMap($geo);
+            $ya->getSaticMap($office["Geo"]);
             $hours = explode(";",$office["Часы"] );
-            $this->bot->sendMessage("Имя: " . $office["Имя"] . "\n" . 
-                                    "Адресс: " . $office["Адресс"] . "\n" . 
-                                    "Сайт: " . $office["Сайт"] . "\n" . 
+            $this->bot->sendMessage($office["Имя"] . "\n" . 
+                                    "Адрес: " . $office["Адрес"] . "\n" . 
                                     "Телефон: " . $office["Телефон"] . "\n" .
                                     "Часы работы: \n" . $hours[0] . "\n" . $hours[1], $this->geoKeyboard);
+            sleep(1);
+            $this->bot->sendPhoto("img.png");
 
         }
     }
