@@ -7,7 +7,16 @@
         private $bot;
         private $lastChatId;
         private $geoLocation;
-      
+        private $menuKeyboard = [
+            'keyboard' => [
+                ["Найти отделение по местоположению"],
+                ["Найти отделение по индексу"],
+                ["Найти ближайшие отделения почты"],
+                ["Изменить местоположение"]
+            ],
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+        ];
         private $geoKeyboard = [
             'keyboard' => [
                 [
@@ -29,8 +38,10 @@
         public function handleCommand($command) {
             if( $command == "/start" ) {
                 $this->handleStart();
-            } else if(!empty($command->latitude)) {
-                $this->handleSetLocation($command);
+            } else if($command == "location was set") {
+                $this->setLocation();
+            } else if($command == "Найти отделение по местоположению") {
+                $this->getPostOffice();
             } else {
                 $this->handleWrong();
             }
@@ -38,14 +49,20 @@
        
         private function handleStart() {
             $this->bot->sendMessage( "Почтовый бот\n ", $this->geoKeyboard);
+            $this->bot->sendMessage( "Установить геолокацию\n ", $this->geoKeyboard);
         }
         private function handleWrong() {
-            $this->bot->sendMessage( "Команда не найдена", $this->geoKeyboard);
+            $this->bot->sendMessage( "Команда не найдена", $this->menuKeyboard);
         }
         public function setLastChatId($chatId) {
             $this->lastChatId = $chatId;
         }
-        private function handleSetLocation($geo) {
+        private function setLocation() {
+            $this->bot->sendMessage( "Меню\n ", $this->menuKeyboard);
+        } 
+        private function getPostOffice() {
+            $geo = $this->bot->getLocation();
+            print_r($geo);
             $ya = new Yandex();
             $address = $ya->getAdress($geo);
             $pochta = new Pochta();
