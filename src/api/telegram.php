@@ -11,7 +11,7 @@
         private $offset;
         private $location;
         public $lastChatId;
-
+        private $index;
 
         public function __construct($botUrl, $botToken) {
             $this->httpClient = new Client([
@@ -37,6 +37,11 @@
             if(!empty($responseBody->result[$length - 1]->message->location)) {
                 $this->location = $responseBody->result[$length - 1]->message->location;
                 return "location was set";    
+            }
+
+            if(strlen($responseBody->result[$length - 1]->message->text)  == 6 && is_numeric($responseBody->result[$length - 1]->message->text)) {
+                $this->index = $responseBody->result[$length - 1]->message->text;
+                return "index was set";    
             }
             return $responseBody->result[$length - 1]->message->text;
         }
@@ -73,6 +78,9 @@
         }
         public function getLocation() {
             return $this->location;
+        }
+        public function getIndex() {
+            return $this->index;
         }
 
     }
