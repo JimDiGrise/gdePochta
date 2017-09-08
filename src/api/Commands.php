@@ -46,9 +46,11 @@
             } else if($command == "index was set") {
                 $this->getPostOfficeByIndex();
             } else if($command == "Найти отделение по местоположению") {
-                $this->getPostOfficeByGeo();
+                $this->getOfficeByGeo();
             } else if($command == "Найти отделение по индексу") {
-                $this->bot->sendMessage( "Введите индекс\n ", $this->geoKeyboard);
+                $this->bot->sendMessage( "Введите индекс\n ", $this->menuKeyboard);
+            } else if($command == "Найти ближайшие отделения почты") {
+                $this->getOffices();
             } else {
                 $this->handleWrong();
             }
@@ -71,19 +73,35 @@
         private function setLocation() {
             $this->bot->sendMessage( "Меню\n ", $this->menuKeyboard);
         } 
-        private function getPostOfficeByGeo() {
+        private function getOffices() {
+            $geo = $this->bot->getLocation();
+            $ya = new Yandex();
+             $officesList = $ya->getItemsByGeoLocation($geo); 
+            foreach($officesList as $office) {
+                sleep(3);
+                $hours = explode(";", $office->properties->CompanyMetaData->Hours->text);
+                $this->bot->sendMessage($office->properties->CompanyMetaData->name . "\n" . 
+                                        "Адрес: " . $office->properties->CompanyMetaData->address . "\n" . 
+                                        "Телефон: " . $office->properties->CompanyMetaData->Phones[0]->formatted . "\n" .
+                                        "Часы работы: \n" . $hours[0] . "\n" . $hours[1], $this->menuKeyboard);
+                $ya->getSaticMap($office->geometry->coordinates);
+                sleep(1);
+                $this->bot->sendPhoto("img.png");
+
+            }
+        }
+        private function getOfficeByGeo() {
             $geo = $this->bot->getLocation();
             $ya = new Yandex();
             $address = $ya->getAdress($geo);
             $this->bot->sendMessage("Ваш адрес: " . $address, $this->menuKeyboard);
             sleep(1);
             $pochta = new Pochta();
-                $index = $pochta->getIndex($address);
-
-            sleep(1);
+            $index = $pochta->getIndex($address);
             $this->bot->sendMessage("Ваш индекс: " . $index, $this->menuKeyboard);
             $office = $ya->getPostOfficeByIndex($index);
             $hours = explode(";",$office["Часы"] );
+            sleep(1);
             $this->bot->sendMessage($office["Имя"] . "\n" . 
                                     "Адрес: " . $office["Адрес"] . "\n" . 
                                     "Телефон: " . $office["Телефон"] . "\n" .
