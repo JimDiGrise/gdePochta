@@ -53,6 +53,7 @@
             ]);    
         }
         public function sendMessage( $message, $keyboard ) { 
+            sleep(1);
             $response = $this->httpClient->request('POST', 'sendMessage', [
 			'json' => ['chat_id' => $this->lastChatId, 
 						'text' => $message, 
@@ -62,6 +63,7 @@
             return $response->getStatusCode();
         }
         public function sendPhoto( $path ) { 
+            sleep(1);
             $res = $this->httpClient->request('POST', 'sendPhoto', [
 			'multipart' => [
                 [
