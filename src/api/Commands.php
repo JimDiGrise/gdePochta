@@ -71,10 +71,17 @@
             $this->lastChatId = $chatId;
         }
         private function setLocation() {
+            if(!file_exists("geolocation.cfg") ) {
+                file_put_contents("geolocation.cfg", json_encode([]));    
+            }
+            $geo = json_decode(file_get_contents("geolocation.cfg"), true);
+            
+            $geo[$this->bot->getChatId()] = $this->bot->getLocation();
+            file_put_contents("geolocation.cfg", json_encode($geo));
             $this->bot->sendMessage( "Меню\n ", $this->menuKeyboard);
         } 
         private function getOffices() {
-            $geo = $this->bot->getLocation();
+            $geo = $this->getLocation();
             $ya = new Yandex();
              $officesList = $ya->getItemsByGeoLocation($geo); 
             foreach($officesList as $office) {
@@ -91,7 +98,7 @@
             }
         }
         private function getOfficeByGeo() {
-            $geo = $this->bot->getLocation();
+            $geo = $this->getLocation();
             $ya = new Yandex();
             $address = $ya->getAdress($geo);
             $this->bot->sendMessage("Ваш адрес: " . $address, $this->menuKeyboard);
@@ -126,6 +133,10 @@
             sleep(1);
             $this->bot->sendPhoto("img.png");
 
+        }
+        private function getLocation() {
+            $locations = json_decode(file_get_contents("geolocation.cfg"), true);
+            return $locations[$this->bot->getChatId()];
         }
     }
     ?>
